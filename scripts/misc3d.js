@@ -116,3 +116,10 @@ var game = (function() {
 		}
 	};
 })();
+
+/**
+ * Debug.
+ */
+function markPoint(x, y, z, c) {
+	game.scene.add(new THREE.ArrowHelper (new THREE.Vector3(0, -1, 0), new THREE.Vector3(x, y + 0.5, z), 0.5, c));
+};
