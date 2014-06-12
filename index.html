@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+	<head>
+
+		<meta charset="utf-8" />
+
+		<link rel="icon" 
+			  type="image/gif" 
+			  href="assets/misc/imp.gif" />
+
+		<title>Game</title>
+
+		<style type="text/css" media="screen">
+		body{
+			margin: 0px;
+			overflow: hidden;
+			text-align: center;
+		}
+
+		#a{
+			text-align: center;
+			position: absolute;
+			top: 50%;
+			left: 0px;
+			width: 100%;
+			height: 1px;
+			overflow: visible;
+			visibility: visible;
+			display: block
+		}
+
+		#b{
+			margin-left: -30px;
+			position: absolute;
+			top: -30px;
+			left: 50%;
+			width: 60px;
+			height: 60px;
+			visibility: visible
+		}
+		</style>
+	</head>
+	<body>
+		<!-- preloader -->
+		<div id="a"><img id="b" height="60" width="60" alt="Loading..." src="assets/misc/loading.gif"></div>
+
+		<!-- 1.10.2 because https://twitter.com/makc3d/status/475039125914271744 -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script src="scripts/loaders.js"></script>
+
+		<!-- r67 -->
+		<script src="http://rawgit.com/mrdoob/three.js/a083e4442732f076e85446ca42e5f7a829b7d28b/build/three.js"></script>
+		<script src="scripts/misc3d.js"></script>
+
+		<script>
+		// load game assets
+		// http://css-tricks.com/multiple-simultaneous-ajax-requests-one-callback-jquery/
+		$.when(
+			 $.loadImage("assets/skybox/Side1.jpg")
+			,$.loadImage("assets/skybox/Side2.jpg")
+			,$.loadImage("assets/skybox/Side3.jpg")
+			,$.loadImage("assets/skybox/Side4.jpg")
+			,$.loadImage("assets/skybox/Side5.jpg")
+			,$.loadImage("assets/skybox/Side6.jpg")
+			,$.getJSON("assets/arena/arena.json")
+			,$.loadImage("assets/arena/arena.jpg")
+			,$.getJSON("assets/shotgun/hud/Dreadus-Shotgun.json")
+			,$.loadImage("assets/shotgun/hud/Dreadus-Shotgun.jpg")
+		).then(function(
+			 skyboxSide1
+			,skyboxSide2
+			,skyboxSide3
+			,skyboxSide4
+			,skyboxSide5
+			,skyboxSide6
+			,arenaModel
+			,arenaTexture
+			,shotgunModel
+			,shotgunTexture
+		){
+			// set up keyboard controls
+
+			var keysPressed = {};
+
+			(function(watchedKeyCodes) {
+				var handler = function(down) {
+					return function(e) {
+						var index = watchedKeyCodes.indexOf(e.keyCode);
+						if (index >= 0) {
+							keysPressed[watchedKeyCodes[index]] = down; e.preventDefault();
+						}
+					};
+				}
+				$(document).keydown(handler(true));
+				$(document).keyup(handler(false));
+			})([
+				KeyboardEvent.DOM_VK_W, KeyboardEvent.DOM_VK_A, KeyboardEvent.DOM_VK_S, KeyboardEvent.DOM_VK_D,
+				KeyboardEvent.DOM_VK_UP, KeyboardEvent.DOM_VK_LEFT, KeyboardEvent.DOM_VK_DOWN, KeyboardEvent.DOM_VK_RIGHT
+			]);
+
+
+			// create various 3D stuff
+
+			game.scene.add(new SkyBox([
+				skyboxSide3, skyboxSide5, skyboxSide6, skyboxSide1, skyboxSide2, skyboxSide4
+			], 1400));
+
+			arenaModel = new StaticMD2Model(arenaModel[0], arenaTexture);
+			arenaModel.material.map.anisotropy = game.maxAnisotropy;
+			game.scene.add(arenaModel);
+
+			shotgunModel = new AnimatedMD2Model(shotgunModel[0], shotgunTexture);
+			shotgunModel.rotation.x = -0.7; // hide
+			shotgunModel.rotation.y = -Math.PI / 2;
+			shotgunModel.position.x = 0.235; // center
+			shotgunModel.position.y = -0.2; // take less space on screen
+			game.camera.add(shotgunModel);
+
+
+			// add 3D scene to the webpage
+
+			$("body").empty().append(game.domElement);
+			var gameViewportSize = function() { return {
+				width: window.innerWidth, height: window.innerHeight
+			}};
+
+
+			// start the game
+
+			var gameLoop = function(dt) {
+
+				// do something just to test the boilerplate
+
+				if (keysPressed[KeyboardEvent.DOM_VK_LEFT]) {
+					game.scene.children[0].rotation.y += 0.01;
+				} else if (keysPressed[KeyboardEvent.DOM_VK_RIGHT]) {
+					game.scene.children[0].rotation.y -= 0.01;
+				}
+
+				shotgunModel.rotation.x *= 0.9;
+
+			};
+
+			game.start(gameLoop, gameViewportSize);
+
+		}).fail(function(err, msg) {
+			console.log(err, msg);
+		});
+		</script>
+	</body>
+</html>
