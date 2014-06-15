@@ -68,6 +68,9 @@
 			,$.loadImage("assets/arena/arena.jpg")
 			,$.getJSON("assets/shotgun/hud/Dreadus-Shotgun.json")
 			,$.loadImage("assets/shotgun/hud/Dreadus-Shotgun.jpg")
+			,$.loadAudio("assets/sounds/step1.mp3")
+			,$.loadAudio("assets/sounds/step2.mp3")
+			,$.loadAudio("assets/sounds/step3.mp3")
 		).then(function(
 			 skyboxSide1
 			,skyboxSide2
@@ -79,6 +82,9 @@
 			,arenaTexture
 			,shotgunModel
 			,shotgunTexture
+			,step1
+			,step2
+			,step3
 		){
 			// set up keyboard controls
 
@@ -155,7 +161,7 @@
 
 			new ecs.Entity()
 				.add(new Hero())
-				.add(new Body(game.camera, 1.0))
+				.add(new Body(game.camera, 3.0))
 				.add(new Motion(-2, 7.7, 25));
 
 
@@ -196,6 +202,23 @@
 				};
 			})();
 
+			var footSteps = (function() {
+				var lastPosition = new THREE.Vector3();
+				var stepSounds = [step1, step2, step3];
+
+				return function(dt) {
+					ecs.for_each([Hero, Motion], function(player) {
+						var motion = player.get(Motion);
+						if(!motion.airborne) {
+							if(lastPosition.distanceToSquared(motion.position) > 3) {
+								lastPosition.copy(motion.position);
+								stepSounds[ Math.round(stepSounds.length * Math.random()) % stepSounds.length ].cloneNode().play();
+							}
+						}
+					});
+				};
+			})();
+
 			var jumpPads = (function() {
 				var pads = [ new THREE.Vector3(-17.5, 8, -10), new THREE.Vector3(17.5, 8, -10), new THREE.Vector3(0, 8, +21) ];
 				var temp = new THREE.Vector3();
@@ -207,7 +230,7 @@
 						var motion = entity.get(Motion);
 						if(!motion.airborne) {
 							for (var j = 0, n = pads.length; j < n; j++) {
-								if (temp.copy(pads[j]).sub(motion.position).lengthSq() < 2.3) {
+								if (pads[j].distanceToSquared(motion.position) < 2.3) {
 
 									// calculate velocity towards another side of platform from jump pad position
 									temp.copy(pads[j]); temp.y = 0; temp.setLength(-0.8); temp.y = 0.7;
@@ -330,6 +353,7 @@
 				keyboardControls(dt);
 				applyPhysics(dt);
 				renderBodies(dt);
+				footSteps(dt);
 
 			};
 
