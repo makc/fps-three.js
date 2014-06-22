@@ -3,7 +3,7 @@
  * http://if-false-panic.blogspot.com/2014/04/minimalist-entitycomponent-system.html
  */
 
-var ecs = (function () {
+define(function () {
   // When implementing an Entity/Component System, the main choice we have to
   // make is how to represent and link entities and components. Because this is
   // a minimalist implementation, we're going to choose a simple option. Both
@@ -100,4 +100,4 @@ var ecs = (function () {
 	Entity: Entity,
 	for_each: for_each
   }
-})();
+});
