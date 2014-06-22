@@ -71,6 +71,10 @@
 			,$.loadAudio("assets/sounds/step1.mp3")
 			,$.loadAudio("assets/sounds/step2.mp3")
 			,$.loadAudio("assets/sounds/step3.mp3")
+			,$.getJSON("assets/shells/shells.json")
+			,$.loadImage("assets/shells/shells.jpg")
+			,$.getJSON("assets/shotgun/item/W-Shotgun.json")
+			,$.loadImage("assets/shotgun/item/W-Shotgun.jpg")
 		).then(function(
 			 skyboxSide1
 			,skyboxSide2
@@ -85,6 +89,10 @@
 			,step1
 			,step2
 			,step3
+			,itemShellsModel
+			,itemShellsTexture
+			,itemShotgunModel
+			,itemShotgunTexture
 		){
 			// set up keyboard controls
 
@@ -125,6 +133,9 @@
 			shotgunModel.position.y = -0.2; // take less space on screen
 			game.camera.add(shotgunModel);
 
+			itemShellsModel = new StaticMD2Model(itemShellsModel[0], itemShellsTexture);
+
+			itemShotgunModel = new StaticMD2Model(itemShotgunModel[0], itemShotgunTexture);
 
 			// add 3D scene to the webpage
 
@@ -147,15 +158,23 @@
 				this.height = height || 0;
 			};
 
-			function Motion(px, py, pz, vx, vy, vz, rx, ry, sx, sy) {
+			function Motion(px, py, pz, vx, vy, vz, rx, ry, sx, sy, d) {
 				// basic entity motion information
 				this.airborne = false;
 				this.position = new THREE.Vector3(px || 0, py || 0, pz || 0);
 				this.velocity = new THREE.Vector3(vx || 0, vy || 0, vz || 0);
 				this.rotation = new THREE.Vector2(rx || 0, ry || 0);
 				this.spinning = new THREE.Vector2(sx || 0, sy || 0);
+				this.damping = d || 0.93;
 			};
 
+			function PendingAddition() {
+				// object initial animation params may go here
+			};
+
+			function Item(shells) {
+				this.shells = shells;
+			};
 
 			// create entities
 
@@ -223,8 +242,6 @@
 				var pads = [ new THREE.Vector3(-17.5, 8, -10), new THREE.Vector3(17.5, 8, -10), new THREE.Vector3(0, 8, +21) ];
 				var temp = new THREE.Vector3();
 
-				for(var i = 0; i < 3; i++) markPoint(pads[i].x, pads[i].y, pads[i].z, [0xff, 0xff00, 0xff0000][i]);
-
 				return function(dt) {
 					ecs.for_each([Motion], function(entity) {
 						var motion = entity.get(Motion);
@@ -266,7 +283,7 @@
 
 						ecs.for_each([Motion], function(entity) {
 							// implement very simple platformer physics
-							var time = 0.3, damping = 0.93;
+							var time = 0.3;
 
 							var motion = entity.get(Motion);
 
@@ -294,10 +311,10 @@
 
 
 							angles.copy(motion.spinning).multiplyScalar(time);
-							if(!motion.airborne) motion.spinning.multiplyScalar(damping);
+							if(!motion.airborne) motion.spinning.multiplyScalar(motion.damping);
 
 							displacement.copy(motion.velocity).multiplyScalar(time);
-							if(!motion.airborne) motion.velocity.multiplyScalar(damping);
+							if(!motion.airborne) motion.velocity.multiplyScalar(motion.damping);
 
 							motion.rotation.add(angles);
 							motion.position.add(displacement);
@@ -337,11 +354,76 @@
 				ecs.for_each([Hero, Motion], function(player) {
 					var motion = player.get(Motion);
 					if(motion.position.y < -123) {
-						motion.position.set(-2, 7.7, 25);
+						player.add(new PendingAddition());
 						motion.velocity.multiplyScalar(0);
 					}
 				});
 			};
+
+			var spawnItems = function(dt) {
+				var itemCount = 0;
+				ecs.for_each([Item], function(entity) {
+					itemCount++;
+				});
+
+				// if there are less than 4 items...
+				if(itemCount < 4) {
+					// ...spawn one every 4 seconds, or N = 4000/dt calls
+					// with probability P per call, P * N ~ 1, or P ~ 1 / N
+
+					var spawnShotgun = (Math.random () < 0.2);
+
+					if(Math.random() < dt / 4000) {
+
+						var shells = spawnShotgun ? 8 : 4;
+						var rotate = spawnShotgun ? ((Math.random() < 0.5) ? -0.01 : +0.01) : 0;
+						var object = spawnShotgun ? itemShotgunModel.clone() : itemShellsModel.clone();
+
+						var item = new ecs.Entity()
+							.add(new Item(shells))
+							.add(new Body(object))
+							.add(new Motion(0, 0, 0, 0, 0, 0, 0, Math.random() * 2 * Math.PI, 0, rotate, 1))
+							.add(new PendingAddition());
+					}
+				}
+			};
+
+			var addObjects = (function() {
+				var locations = [
+					new THREE.Vector3(-2, 7.7, 25), new THREE.Vector3(+2, 7.7, 25),
+					new THREE.Vector3(-5, 7.7, 28), new THREE.Vector3(+5, 7.7, 28), new THREE.Vector3(0, 7.7, 28),
+					new THREE.Vector3(-6, 7.7, 24), new THREE.Vector3(+6, 7.7, 24),
+					new THREE.Vector3(-8, 7.7, 26), new THREE.Vector3(+8, 7.7, 26),
+					new THREE.Vector3(-16, 2.9, 14), new THREE.Vector3(+16, 2.9, 14),
+					new THREE.Vector3(-14, 2.9, 10), new THREE.Vector3(+14, 2.9, 10),
+					new THREE.Vector3(-5, 0.1, 5), new THREE.Vector3(+5, 0.1, 5), new THREE.Vector3(0, 0.1, 8)
+				];
+
+				var n = locations.length;
+				var m = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), 2 * Math.PI / 3), v;
+				for (var i = 0; i < n; i++) {
+					markPoint (locations[i].x, locations[i].y, locations[i].z);
+
+					v = locations[i].clone(); v.applyMatrix4(m); locations.push(v);
+					markPoint (v.x, v.y, v.z);
+
+					v = v.clone(); v.applyMatrix4(m); locations.push(v);
+					markPoint (v.x, v.y, v.z);
+				}
+
+				return function(dt) {
+					ecs.for_each([Body, Motion, PendingAddition], function(entity) {
+						// select random spawn location
+						entity.get(Motion).position.copy(
+							locations[ Math.floor(Math.random() * locations.length) % locations.length ]
+						);
+						// add 3D object to the scene
+						game.scene.add(entity.get(Body).object);
+						// remove PendingAddition component
+						entity.remove(PendingAddition);
+					});
+				};
+			})();
 
 
 			// start the game
@@ -349,6 +431,8 @@
 			var gameLoop = function(dt) {
 
 				resetHero(dt);
+				spawnItems(dt);
+				addObjects(dt);
 				jumpPads(dt);
 				keyboardControls(dt);
 				applyPhysics(dt);
