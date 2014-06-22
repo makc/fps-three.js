@@ -12,13 +12,8 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 	var n = locations.length;
 	var m = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), 2 * Math.PI / 3), v;
 	for (var i = 0; i < n; i++) {
-		game.markPoint (locations[i].x, locations[i].y, locations[i].z);
-
 		v = locations[i].clone(); v.applyMatrix4(m); locations.push(v);
-		game.markPoint (v.x, v.y, v.z);
-
 		v = v.clone(); v.applyMatrix4(m); locations.push(v);
-		game.markPoint (v.x, v.y, v.z);
 	}
 
 	return { update: function(dt) {
@@ -29,6 +24,10 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 			);
 			// add 3D object to the scene
 			game.scene.add(entity.get(components.Body).object);
+			// play sound to notify the player we have spawned something
+			var pa = entity.get(components.PendingAddition); if (pa.sound) { pa.sound.play(); }
+			// add the plate and move it to Plate component for glowingPlates system to handle
+			if(pa.plate) { pa.plate.rotation.x = -0.5 * Math.PI; game.scene.add(pa.plate); entity.add(new components.Plate(pa.plate)); }
 			// remove PendingAddition component
 			entity.remove(components.PendingAddition);
 		});

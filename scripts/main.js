@@ -14,6 +14,7 @@ require([
 	,"systems/applyPhysics"
 	,"systems/renderBodies"
 	,"systems/footSteps"
+	,"systems/glowingPlates"
 ], function(
 	 ecs
 	,game
@@ -26,6 +27,7 @@ require([
 	,applyPhysics
 	,renderBodies
 	,footSteps
+	,glowingPlates
 ) {
 
 	// load game assets
@@ -48,6 +50,8 @@ require([
 		,$.loadImage("assets/shells/shells.jpg")
 		,$.getJSON("assets/shotgun/item/W-Shotgun.json")
 		,$.loadImage("assets/shotgun/item/W-Shotgun.jpg")
+		,$.loadImage("assets/misc/itemPlate.jpg")
+		,$.loadAudio("assets/sounds/itemAppeared.mp3")
 	).then(function(
 		 skyboxSide1
 		,skyboxSide2
@@ -66,6 +70,8 @@ require([
 		,itemShellsTexture
 		,itemShotgunModel
 		,itemShotgunTexture
+		,itemPlateTexture
+		,itemAppeared
 	){
 		// create and store various stuff on game.assets
 
@@ -92,6 +98,19 @@ require([
 		game.assets.itemShotgunModel = new StaticMD2Model(itemShotgunModel[0], itemShotgunTexture);
 
 		game.assets.steps = [step1, step2, step3];
+
+		itemPlateTexture = new THREE.Texture(itemPlateTexture);
+		itemPlateTexture.needsUpdate = true;
+		game.assets.itemPlate = new THREE.Mesh(
+			new THREE.PlaneGeometry(1.3, 1.3),
+			new THREE.MeshBasicMaterial({
+				map: itemPlateTexture, opacity: 0,
+				polygonOffset: true, polygonOffsetFactor: -0.1,
+				transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+			})
+		);
+
+		game.assets.itemAppeared = itemAppeared;
 
 
 		// add 3D scene to the webpage
@@ -122,6 +141,7 @@ require([
 			applyPhysics.update(dt);
 			renderBodies.update(dt);
 			footSteps.update(dt);
+			glowingPlates.update(dt);
 
 		};
 

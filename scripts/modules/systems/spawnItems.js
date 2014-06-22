@@ -22,7 +22,10 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 					.add(new components.Item(shells))
 					.add(new components.Body(object))
 					.add(new components.Motion(0, 0, 0, 0, 0, 0, 0, Math.random() * 2 * Math.PI, 0, rotate, 1))
-					.add(new components.PendingAddition());
+					.add(new components.PendingAddition(
+						game.assets.itemPlate.clone(),
+						game.assets.itemAppeared.cloneNode()
+					));
 			}
 		}
 	}};

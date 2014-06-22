@@ -24,12 +24,17 @@ define({
 		this.damping = d || 0.93;
 	},
 
-	PendingAddition : function PendingAddition () {
-		// object initial animation params may go here
+	PendingAddition : function PendingAddition (plate, sound) {
+		this.plate = plate;
+		this.sound = sound;
 	},
 
 	Item : function Item (shells) {
 		this.shells = shells;
+	},
+
+	Plate : function Plate (plate) {
+		this.plate = plate;
 	}
 
 });
