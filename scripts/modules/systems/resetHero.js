@@ -7,6 +7,7 @@ define(["ecs", "components"], function (ecs, components) {
 				player.add(new components.PendingAddition());
 				motion.velocity.multiplyScalar(0);
 			}
+			return true;
 		});
 	}};
 })();

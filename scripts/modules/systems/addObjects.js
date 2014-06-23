@@ -23,11 +23,11 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 				locations[ Math.floor(Math.random() * locations.length) % locations.length ]
 			);
 			// add 3D object to the scene
-			game.scene.add(entity.get(components.Body).object);
+			var object = entity.get(components.Body).object; game.scene.add(object);
 			// play sound to notify the player we have spawned something
 			var pa = entity.get(components.PendingAddition); if (pa.sound) { pa.sound.play(); }
 			// add the plate and move it to Plate component for glowingPlates system to handle
-			if(pa.plate) { pa.plate.rotation.x = -0.5 * Math.PI; game.scene.add(pa.plate); entity.add(new components.Plate(pa.light, pa.plate)); }
+			if(pa.plate) { object.add(pa.plate); entity.add(new components.Plate(pa.light, pa.plate)); }
 			// remove PendingAddition component
 			entity.remove(components.PendingAddition);
 		});

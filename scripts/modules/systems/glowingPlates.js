@@ -1,20 +1,24 @@
-define(["ecs", "game", "components"], function (ecs, game, components) {
+define(["ecs", "components"], function (ecs, components) {
+	var euler = new THREE.Euler(-0.5 * Math.PI, 0, 0, 'YXZ');
 
 	// rules to animate light pillar by
-	var lightScale = function (y, y0, r) {
-		return Math.min(1, Math.max(1e-3, (y - y0) / r));
+	var lightScale = function (y, r) {
+		return Math.min(1, Math.max(1e-3, y / r));
 	};
-	var lightOpacity = function (y, y0, r) {
-		return Math.min(1, Math.max(0, 1 - (y - y0 - r) * 0.5));
+	var lightOpacity = function (y, r) {
+		return Math.min(1, Math.max(0, 1 - (y - r) * 0.5));
 	};
 
 	return { update: function(dt) {
-		ecs.for_each([components.Motion, components.Plate], function(entity) {
+		ecs.for_each([components.Plate], function(entity) {
 			var plateComponent = entity.get(components.Plate);
 			var plate = plateComponent.plate;
 
-			// adjust position
-			plate.position.copy(entity.get(components.Motion).position);
+			// adjust rotation
+			euler.setFromQuaternion(plate.parent.quaternion);
+			euler.x = -0.5 * Math.PI;
+			euler.y = -euler.y;
+			plate.quaternion.setFromEuler(euler);
 
 			// glow
 			plate.material.opacity =
@@ -28,8 +32,8 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 					ray = plateComponent.pillar[i];
 
 					ray.position.y += 5e-3 * dt;
-					ray.scale.y = lightScale(ray.position.y, plate.position.y, ray.geometry.boundingSphere.radius);
-					ray.material.opacity = lightOpacity(ray.position.y, plate.position.y, ray.geometry.boundingSphere.radius);
+					ray.scale.y = lightScale(ray.position.y, ray.geometry.boundingSphere.radius);
+					ray.material.opacity = lightOpacity(ray.position.y, ray.geometry.boundingSphere.radius);
 					if (ray.material.opacity < 1e-3) {
 						ray.position.y = plate.position.y;
 					}
@@ -41,7 +45,6 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 					ray = plateComponent.light.clone();
 					ray.material = plateComponent.light.material.clone();
 
-					ray.position.copy(plate.position);
 					ray.position.y -= 2 * ray.geometry.boundingSphere.radius * Math.random();
 
 					var a = 2 * Math.PI * i / n, r = 0.2 * Math.random();
@@ -50,7 +53,7 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 
 					ray.rotation.y = Math.random() * 2 * Math.PI;
 
-					game.scene.add(ray);
+					plate.parent.add(ray);
 
 					plateComponent.pillar[i] = ray;
 				}

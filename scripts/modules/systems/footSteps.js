@@ -10,6 +10,7 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 					game.assets.steps[ Math.round(game.assets.steps.length * Math.random()) % game.assets.steps.length ].cloneNode().play();
 				}
 			}
+			return true;
 		});
 	}};
 });

@@ -50,8 +50,16 @@ define(function () {
   }
 
   // To unlink the component from the entity again, we just nullify the value.
+  // If no arguments were given, the entity itself is removed.
   Entity.prototype.remove = function(component_constructor) {
-    this[component_constructor.name.toLowerCase()] = null
+    if(component_constructor) {
+      this[component_constructor.name.toLowerCase()] = null
+    } else {
+      var index = entities.indexOf(this);
+      if (index > -1) {
+        entities.splice(index, 1);
+      }
+    }
     return this
   }
 
@@ -86,10 +94,13 @@ define(function () {
   // is, the query will apply the specified callback against each of the
   // matching entities. E.g. `for_each([position, sound], console.log)` would
   // write all entities to console which have a position and sound component.
+  // If `fn` returns true, the loop stops.
   function for_each(component_constructors, fn) {
     for (var i = 0; i < entities.length; i++) {
       var entity = entities[i]
-      if (entity.has_all(component_constructors)) fn(entity)
+      if (entity.has_all(component_constructors)) if (fn(entity)) break;
+      // if this entity was removed by fn(), make sure we do not skip the next one
+      if (entity != entities[i]) i--;
     }
   }
 

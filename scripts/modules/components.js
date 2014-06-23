@@ -4,7 +4,7 @@
 define({
 
 	Hero : function Hero () {
-		// all the properties unique to our hero shall go here
+		this.shells = 0;
 	},
 
 	Body : function Body (object, height) {
@@ -27,6 +27,10 @@ define({
 	PendingAddition : function PendingAddition (light, plate, sound) {
 		this.light = light;
 		this.plate = plate;
+		this.sound = sound;
+	},
+
+	PendingRemoval : function PendingRemoval (sound) {
 		this.sound = sound;
 	},
 

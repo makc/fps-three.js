@@ -15,6 +15,8 @@ require([
 	,"systems/renderBodies"
 	,"systems/footSteps"
 	,"systems/glowingPlates"
+	,"systems/pickItems"
+	,"systems/removeObjects"
 ], function(
 	 ecs
 	,game
@@ -28,6 +30,8 @@ require([
 	,renderBodies
 	,footSteps
 	,glowingPlates
+	,pickItems
+	,removeObjects
 ) {
 
 	// load game assets
@@ -53,6 +57,7 @@ require([
 		,$.loadImage("assets/misc/itemLight.jpg")
 		,$.loadImage("assets/misc/itemPlate.jpg")
 		,$.loadAudio("assets/sounds/itemAppeared.mp3")
+		,$.loadAudio("assets/sounds/itemPicked.mp3")
 	).then(function(
 		 skyboxSide1
 		,skyboxSide2
@@ -74,6 +79,7 @@ require([
 		,itemLightTexture
 		,itemPlateTexture
 		,itemAppeared
+		,itemPicked
 	){
 		// create and store various stuff on game.assets
 
@@ -125,6 +131,7 @@ require([
 		);
 
 		game.assets.itemAppeared = itemAppeared;
+		game.assets.itemPicked = itemPicked;
 
 
 		// add 3D scene to the webpage
@@ -156,6 +163,8 @@ require([
 			renderBodies.update(dt);
 			footSteps.update(dt);
 			glowingPlates.update(dt);
+			pickItems.update(dt);
+			removeObjects.update(dt);
 
 		};
 

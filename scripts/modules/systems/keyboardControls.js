@@ -50,6 +50,7 @@ define(["ecs", "components"], function (ecs, components) {
 				if(Math.abs(combined.z) >= Math.abs(motion.velocity.z)) motion.velocity.z = combined.z;
 
 			}
+			return true;
 		});
 	}};
 });
