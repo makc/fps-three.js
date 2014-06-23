@@ -50,6 +50,7 @@ require([
 		,$.loadImage("assets/shells/shells.jpg")
 		,$.getJSON("assets/shotgun/item/W-Shotgun.json")
 		,$.loadImage("assets/shotgun/item/W-Shotgun.jpg")
+		,$.loadImage("assets/misc/itemLight.jpg")
 		,$.loadImage("assets/misc/itemPlate.jpg")
 		,$.loadAudio("assets/sounds/itemAppeared.mp3")
 	).then(function(
@@ -70,6 +71,7 @@ require([
 		,itemShellsTexture
 		,itemShotgunModel
 		,itemShotgunTexture
+		,itemLightTexture
 		,itemPlateTexture
 		,itemAppeared
 	){
@@ -98,6 +100,18 @@ require([
 		game.assets.itemShotgunModel = new StaticMD2Model(itemShotgunModel[0], itemShotgunTexture);
 
 		game.assets.steps = [step1, step2, step3];
+
+		itemLightTexture = new THREE.Texture(itemLightTexture);
+		itemLightTexture.needsUpdate = true;
+		game.assets.itemLight = new THREE.Mesh(
+			new THREE.PlaneGeometry(0.1, 6),
+			new THREE.MeshBasicMaterial({
+				map: itemLightTexture, side: THREE.DoubleSide, opacity: 0,
+				transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+			})
+		);
+
+		game.assets.itemLight.geometry.computeBoundingSphere();
 
 		itemPlateTexture = new THREE.Texture(itemPlateTexture);
 		itemPlateTexture.needsUpdate = true;

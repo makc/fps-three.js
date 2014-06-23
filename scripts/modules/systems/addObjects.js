@@ -27,7 +27,7 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 			// play sound to notify the player we have spawned something
 			var pa = entity.get(components.PendingAddition); if (pa.sound) { pa.sound.play(); }
 			// add the plate and move it to Plate component for glowingPlates system to handle
-			if(pa.plate) { pa.plate.rotation.x = -0.5 * Math.PI; game.scene.add(pa.plate); entity.add(new components.Plate(pa.plate)); }
+			if(pa.plate) { pa.plate.rotation.x = -0.5 * Math.PI; game.scene.add(pa.plate); entity.add(new components.Plate(pa.light, pa.plate)); }
 			// remove PendingAddition component
 			entity.remove(components.PendingAddition);
 		});

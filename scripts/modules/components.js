@@ -24,7 +24,8 @@ define({
 		this.damping = d || 0.93;
 	},
 
-	PendingAddition : function PendingAddition (plate, sound) {
+	PendingAddition : function PendingAddition (light, plate, sound) {
+		this.light = light;
 		this.plate = plate;
 		this.sound = sound;
 	},
@@ -33,7 +34,8 @@ define({
 		this.shells = shells;
 	},
 
-	Plate : function Plate (plate) {
+	Plate : function Plate (light, plate) {
+		this.light = light;
 		this.plate = plate;
 	}
 
