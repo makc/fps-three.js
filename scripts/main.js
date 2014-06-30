@@ -92,7 +92,6 @@ require([
 		game.scene.add(arenaModel);
 
 		shotgunModel = new AnimatedMD2Model(shotgunModel[0], shotgunTexture);
-		shotgunModel.rotation.x = -0.7; // hide
 		shotgunModel.rotation.y = -Math.PI / 2;
 		shotgunModel.position.x = 0.235; // center
 		shotgunModel.position.y = -0.2; // take less space on screen
@@ -147,7 +146,7 @@ require([
 		new ecs.Entity()
 			.add(new components.Hero())
 			.add(new components.Body(game.camera, 3.0))
-			.add(new components.Motion(-2, 7.7, 25));
+			.add(new components.Motion(0, -321, 0));
 
 
 		// start the game

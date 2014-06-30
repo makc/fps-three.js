@@ -4,6 +4,8 @@
 define({
 
 	Hero : function Hero () {
+		this.hasShotgun = false;
+		this.health = 100;
 		this.shells = 0;
 	},
 
