@@ -4,7 +4,6 @@
 define({
 
 	Hero : function Hero () {
-		this.hasShotgun = false;
 		this.health = 100;
 		this.shells = 0;
 	},
@@ -36,13 +35,20 @@ define({
 		this.sound = sound;
 	},
 
-	Item : function Item (shells) {
+	Item : function Item (shells, givesShotgun) {
 		this.shells = shells;
+		this.givesShotgun = givesShotgun;
 	},
 
 	Plate : function Plate (light, plate) {
 		this.light = light;
 		this.plate = plate;
+	},
+
+	Shotgun : function Shotgun () {
+		this.firing = false;
+		this.loading = false;
+		this.pullingTrigger = false;
 	}
 
 });

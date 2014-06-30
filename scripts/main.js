@@ -17,6 +17,7 @@ require([
 	,"systems/glowingPlates"
 	,"systems/pickItems"
 	,"systems/removeObjects"
+	,"systems/handleShotgun"
 ], function(
 	 ecs
 	,game
@@ -32,6 +33,7 @@ require([
 	,glowingPlates
 	,pickItems
 	,removeObjects
+	,handleShotgun
 ) {
 
 	// load game assets
@@ -58,6 +60,7 @@ require([
 		,$.loadImage("assets/misc/itemPlate.jpg")
 		,$.loadAudio("assets/sounds/itemAppeared.mp3")
 		,$.loadAudio("assets/sounds/itemPicked.mp3")
+		,$.loadAudio("assets/sounds/shotgunFired.mp3")
 	).then(function(
 		 skyboxSide1
 		,skyboxSide2
@@ -80,6 +83,7 @@ require([
 		,itemPlateTexture
 		,itemAppeared
 		,itemPicked
+		,shotgunFired
 	){
 		// create and store various stuff on game.assets
 
@@ -93,8 +97,6 @@ require([
 
 		shotgunModel = new AnimatedMD2Model(shotgunModel[0], shotgunTexture);
 		shotgunModel.rotation.y = -Math.PI / 2;
-		shotgunModel.position.x = 0.235; // center
-		shotgunModel.position.y = -0.2; // take less space on screen
 		game.camera.add(shotgunModel);
 
 		game.assets.arenaModel = arenaModel;
@@ -131,6 +133,7 @@ require([
 
 		game.assets.itemAppeared = itemAppeared;
 		game.assets.itemPicked = itemPicked;
+		game.assets.shotgunFired = shotgunFired;
 
 
 		// add 3D scene to the webpage
@@ -164,6 +167,7 @@ require([
 			glowingPlates.update(dt);
 			pickItems.update(dt);
 			removeObjects.update(dt);
+			handleShotgun.update(dt);
 
 		};
 

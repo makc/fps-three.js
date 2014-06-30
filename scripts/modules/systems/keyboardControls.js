@@ -50,6 +50,15 @@ define(["ecs", "components"], function (ecs, components) {
 				if(Math.abs(combined.z) >= Math.abs(motion.velocity.z)) motion.velocity.z = combined.z;
 
 			}
+
+			// if player has the shotgun...
+			var shotgun = player.get(components.Shotgun);
+			if(shotgun) {
+
+				// ...try to use it
+				shotgun.pullingTrigger = keysPressed[keys.SP];
+			}
+
 			return true;
 		});
 	}};

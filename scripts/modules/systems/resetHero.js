@@ -1,4 +1,4 @@
-define(["ecs", "game", "components"], function (ecs, game, components) {
+define(["ecs", "game", "components", "systems/handleShotgun"], function (ecs, game, components, handleShotgun) {
 	return { update: function(dt) {
 		// temorary system to bring our hero back on the platform
 		ecs.for_each([components.Hero, components.Motion], function(player) {
@@ -9,8 +9,7 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 
 				player.remove(components.Hero).add(new components.Hero());
 
-				var shotgunRotation = game.assets.shotgunModel.rotation;
-				$(shotgunRotation).stop(true); shotgunRotation.x = -0.7;
+				player.remove(components.Shotgun); handleShotgun.reset();
 			}
 			return true;
 		});

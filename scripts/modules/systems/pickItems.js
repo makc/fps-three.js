@@ -1,4 +1,4 @@
-define(["ecs", "game", "components"], function (ecs, game, components) {
+define(["ecs", "game", "components", "systems/handleShotgun"], function (ecs, game, components, handleShotgun) {
 	return { update: function(dt) {
 		ecs.for_each([components.Hero, components.Motion], function(player) {
 			var playerPosition = player.get(components.Motion).position;
@@ -7,15 +7,14 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 				if (itemPosition.distanceToSquared(playerPosition) < 1) {
 					// collect the item
 					var hero = player.get(components.Hero);
-					var shells = item.get(components.Item).shells;
+					hero.shells += item.get(components.Item).shells;
 
-					hero.hasShotgun = hero.hasShotgun || (shells == 8);
-					hero.shells = hero.shells + shells;
-
-					if (hero.hasShotgun) {
-						$(game.assets.shotgunModel.rotation)
-							.animate({ x: -0.7 }, { duration: 400 })
-							.animate({ x:  0   }, { duration: 400 });
+					var shotgun = player.get(components.Shotgun);
+					if(!shotgun && item.get(components.Item).givesShotgun) {
+						player.add(shotgun = new components.Shotgun());
+					}
+					if(shotgun) {
+						handleShotgun.reload();
 					}
 
 					// mark the item for removal

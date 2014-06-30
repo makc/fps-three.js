@@ -19,7 +19,7 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 				var object = spawnShotgun ? game.assets.itemShotgunModel.clone() : game.assets.itemShellsModel.clone();
 
 				var item = new ecs.Entity()
-					.add(new components.Item(shells))
+					.add(new components.Item(shells, shells == 8))
 					.add(new components.Body(object))
 					.add(new components.Motion(0, 0, 0, 0, 0, 0, 0, Math.random() * 2 * Math.PI, 0, rotate, 1))
 					.add(new components.PendingAddition(
