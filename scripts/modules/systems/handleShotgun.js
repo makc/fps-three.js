@@ -49,7 +49,6 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 
 			if(!shotgun.loading) {
 				shotgun.loading = true;
-				console.log(0)
 				$(game.assets.shotgunModel.rotation)
 					.animate({ x: -0.7 }, { duration: 400 })
 					.animate({ x:  0   }, { duration: 400, complete: function() {

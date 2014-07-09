@@ -23,7 +23,7 @@ define(["ecs", "components"], function (ecs, components) {
 			// glow
 			plate.material.opacity =
 				0.9 * plate.material.opacity +
-				0.1 * (0.7 + 0.3 * Math.sin((Date.now() % 6283) * 5e-3));
+				0.1 * (0.7 + 0.5 * Math.sin((Date.now() % 6283) * 5e-3));
 
 			var i, n, ray;
 			if (plateComponent.pillar) {
@@ -41,13 +41,16 @@ define(["ecs", "components"], function (ecs, components) {
 			} else if (plateComponent.light) {
 				// create light pillar
 				plateComponent.pillar = [];
-				for (i = 0, n = 5 + 4 * Math.random(); i < n; i++) {
+
+				var R = 0.3 * plateComponent.plate.geometry.boundingSphere.radius;
+
+				for (i = 0, n = 5 + 10 * R * Math.random(); i < n; i++) {
 					ray = plateComponent.light.clone();
 					ray.material = plateComponent.light.material.clone();
 
 					ray.position.y -= 2 * ray.geometry.boundingSphere.radius * Math.random();
 
-					var a = 2 * Math.PI * i / n, r = 0.2 * Math.random();
+					var a = 2 * Math.PI * i / n, r = R * Math.random();
 					ray.position.x += r * Math.cos(a);
 					ray.position.z += r * Math.sin(a);
 

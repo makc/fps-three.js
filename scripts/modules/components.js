@@ -49,6 +49,9 @@ define({
 		this.firing = false;
 		this.loading = false;
 		this.pullingTrigger = false;
+	},
+
+	Monster : function Monster () {
 	}
 
 });

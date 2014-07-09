@@ -8,6 +8,7 @@ require([
 	,"components"
 	,"systems/resetHero"
 	,"systems/spawnItems"
+	,"systems/spawnMonsters"
 	,"systems/addObjects"
 	,"systems/jumpPads"
 	,"systems/keyboardControls"
@@ -15,6 +16,7 @@ require([
 	,"systems/renderBodies"
 	,"systems/footSteps"
 	,"systems/glowingPlates"
+	,"systems/animateMonsters"
 	,"systems/pickItems"
 	,"systems/removeObjects"
 	,"systems/handleShotgun"
@@ -24,6 +26,7 @@ require([
 	,components
 	,resetHero
 	,spawnItems
+	,spawnMonsters
 	,addObjects
 	,jumpPads
 	,keyboardControls
@@ -31,6 +34,7 @@ require([
 	,renderBodies
 	,footSteps
 	,glowingPlates
+	,animateMonsters
 	,pickItems
 	,removeObjects
 	,handleShotgun
@@ -61,6 +65,11 @@ require([
 		,$.loadAudio("assets/sounds/itemAppeared.mp3")
 		,$.loadAudio("assets/sounds/itemPicked.mp3")
 		,$.loadAudio("assets/sounds/shotgunFired.mp3")
+		,$.loadImage("assets/misc/monsterLight.jpg")
+		,$.loadImage("assets/misc/monsterPlate.jpg")
+		,$.loadAudio("assets/sounds/monsterAppeared.mp3")
+		,$.getJSON("assets/imp/imp.json")
+		,$.loadImage("assets/imp/skin.jpg")
 	).then(function(
 		 skyboxSide1
 		,skyboxSide2
@@ -84,6 +93,11 @@ require([
 		,itemAppeared
 		,itemPicked
 		,shotgunFired
+		,monsterLightTexture
+		,monsterPlateTexture
+		,monsterAppeared
+		,monsterModel
+		,monsterTextue
 	){
 		// create and store various stuff on game.assets
 
@@ -108,33 +122,20 @@ require([
 
 		game.assets.steps = [step1, step2, step3];
 
-		itemLightTexture = new THREE.Texture(itemLightTexture);
-		itemLightTexture.needsUpdate = true;
-		game.assets.itemLight = new THREE.Mesh(
-			new THREE.PlaneGeometry(0.1, 6),
-			new THREE.MeshBasicMaterial({
-				map: itemLightTexture, side: THREE.DoubleSide, opacity: 0,
-				transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
-			})
-		);
-
-		game.assets.itemLight.geometry.computeBoundingSphere();
-
-		itemPlateTexture = new THREE.Texture(itemPlateTexture);
-		itemPlateTexture.needsUpdate = true;
-		game.assets.itemPlate = new THREE.Mesh(
-			new THREE.PlaneGeometry(1.3, 1.3),
-			new THREE.MeshBasicMaterial({
-				map: itemPlateTexture, opacity: 0,
-				polygonOffset: true, polygonOffsetFactor: -0.1,
-				transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
-			})
-		);
+		game.assets.itemLight = createMeshForPlate(itemLightTexture, { side: THREE.DoubleSide });
+		game.assets.itemPlate = createMeshForPlate(itemPlateTexture, { polygonOffset: true, polygonOffsetFactor: -0.1 });
 
 		game.assets.itemAppeared = itemAppeared;
 		game.assets.itemPicked = itemPicked;
+
+		game.assets.monsterLight = createMeshForPlate(monsterLightTexture, { side: THREE.DoubleSide });
+		game.assets.monsterPlate = createMeshForPlate(monsterPlateTexture, { polygonOffset: true, polygonOffsetFactor: -0.1 });
+
+		game.assets.monsterAppeared = monsterAppeared;
+
 		game.assets.shotgunFired = shotgunFired;
 
+		game.assets.monsterModel = new AnimatedMD2Model(monsterModel[0], monsterTextue);
 
 		// add 3D scene to the webpage
 
@@ -158,6 +159,7 @@ require([
 
 			resetHero.update(dt);
 			spawnItems.update(dt);
+			spawnMonsters.update(dt);
 			addObjects.update(dt);
 			jumpPads.update(dt);
 			keyboardControls.update(dt);
@@ -165,6 +167,7 @@ require([
 			renderBodies.update(dt);
 			footSteps.update(dt);
 			glowingPlates.update(dt);
+			animateMonsters.update(dt);
 			pickItems.update(dt);
 			removeObjects.update(dt);
 			handleShotgun.update(dt);

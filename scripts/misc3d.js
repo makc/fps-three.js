@@ -65,3 +65,28 @@ StaticMD2Model = function(json, image) {
 }
 
 StaticMD2Model.prototype = Object.create(THREE.Mesh.prototype);
+
+
+/**
+ * Glowing plate helper
+ */
+function createMeshForPlate(image, materialParams) {
+	var texture = new THREE.Texture(image);
+	texture.needsUpdate = true;
+
+	materialParams.map = texture;
+	materialParams.opacity = 0;
+	materialParams.transparent = true;
+	materialParams.blending = THREE.AdditiveBlending;
+	materialParams.depthWrite = false;
+
+	var width = 9e-3 * image.width, height = 9e-3 * image.height;
+	var plate = new THREE.Mesh(
+		new THREE.PlaneGeometry(width, height),
+		new THREE.MeshBasicMaterial(materialParams)
+	);
+
+	plate.geometry.computeBoundingSphere();
+
+	return plate;
+};
