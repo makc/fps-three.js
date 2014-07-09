@@ -45,6 +45,10 @@ define({
 		this.plate = plate;
 	},
 
+	Shot : function Shot (ray) {
+		this.ray = ray;
+	},
+
 	Shotgun : function Shotgun () {
 		this.firing = false;
 		this.loading = false;
@@ -52,6 +56,7 @@ define({
 	},
 
 	Monster : function Monster () {
+		this.health = 100;
 	}
 
 });

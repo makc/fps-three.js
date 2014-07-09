@@ -38,6 +38,19 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 				}});
 
 				hero.shells--;
+
+				// create Shot entity
+				var origin = motion.position.clone();
+				origin.y += player.get(components.Body).height;
+
+				var direction = new THREE.Vector3(0, 0, -1);
+				direction.applyEuler(new THREE.Euler(
+					motion.rotation.x, motion.rotation.y, motion.rotation.z, 'YXZ'
+				));
+
+				new ecs.Entity().add(new components.Shot(new THREE.Ray(origin, direction)));
+
+				game.scene.add(new THREE.ArrowHelper (direction, origin, 3));
 			}
 
 			return true;

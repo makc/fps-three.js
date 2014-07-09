@@ -18,6 +18,7 @@ require([
 	,"systems/glowingPlates"
 	,"systems/animateMonsters"
 	,"systems/pickItems"
+	,"systems/killMonsters"
 	,"systems/removeObjects"
 	,"systems/handleShotgun"
 ], function(
@@ -36,6 +37,7 @@ require([
 	,glowingPlates
 	,animateMonsters
 	,pickItems
+	,killMonsters
 	,removeObjects
 	,handleShotgun
 ) {
@@ -169,6 +171,7 @@ require([
 			glowingPlates.update(dt);
 			animateMonsters.update(dt);
 			pickItems.update(dt);
+			killMonsters.update(dt);
 			removeObjects.update(dt);
 			handleShotgun.update(dt);
 

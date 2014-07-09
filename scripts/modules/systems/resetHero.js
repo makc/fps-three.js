@@ -14,4 +14,4 @@ define(["ecs", "game", "components", "systems/handleShotgun"], function (ecs, ga
 			return true;
 		});
 	}};
-})();
+});
