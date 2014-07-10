@@ -16,7 +16,7 @@ require([
 	,"systems/renderBodies"
 	,"systems/footSteps"
 	,"systems/glowingPlates"
-	,"systems/animateMonsters"
+	,"systems/animateObjects"
 	,"systems/pickItems"
 	,"systems/killMonsters"
 	,"systems/removeObjects"
@@ -35,7 +35,7 @@ require([
 	,renderBodies
 	,footSteps
 	,glowingPlates
-	,animateMonsters
+	,animateObjects
 	,pickItems
 	,killMonsters
 	,removeObjects
@@ -111,12 +111,11 @@ require([
 		arenaModel.material.map.anisotropy = game.maxAnisotropy;
 		game.scene.add(arenaModel);
 
+		game.assets.arenaModel = arenaModel;
+
 		shotgunModel = new AnimatedMD2Model(shotgunModel[0], shotgunTexture);
 		shotgunModel.rotation.y = -Math.PI / 2;
 		game.camera.add(shotgunModel);
-
-		game.assets.arenaModel = arenaModel;
-		game.assets.shotgunModel = shotgunModel;
 
 		game.assets.itemShellsModel = new StaticMD2Model(itemShellsModel[0], itemShellsTexture);
 
@@ -137,7 +136,7 @@ require([
 
 		game.assets.shotgunFired = shotgunFired;
 
-		game.assets.monsterModel = new AnimatedMD2Model(monsterModel[0], monsterTextue);
+		game.assets.monsterModel = new AnimatedMD2Model(monsterModel[0], monsterTextue, "stand", 2600);
 
 		// add 3D scene to the webpage
 
@@ -152,6 +151,7 @@ require([
 		new ecs.Entity()
 			.add(new components.Hero())
 			.add(new components.Body(game.camera, 3.0))
+			.add(new components.AnimatedObject(shotgunModel))
 			.add(new components.Motion(0, -321, 0));
 
 
@@ -169,7 +169,7 @@ require([
 			renderBodies.update(dt);
 			footSteps.update(dt);
 			glowingPlates.update(dt);
-			animateMonsters.update(dt);
+			animateObjects.update(dt);
 			pickItems.update(dt);
 			killMonsters.update(dt);
 			removeObjects.update(dt);

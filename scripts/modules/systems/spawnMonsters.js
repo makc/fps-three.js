@@ -13,11 +13,11 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 			if(Math.random() < dt / 7000) {
 
 				var object = game.assets.monsterModel.clone();
-				object.playAnimation("stand", 3);
 
 				var item = new ecs.Entity()
 					.add(new components.Monster())
 					.add(new components.Body(object))
+					.add(new components.AnimatedObject(object))
 					.add(new components.Motion())
 					.add(new components.PendingAddition(
 						game.assets.monsterLight,

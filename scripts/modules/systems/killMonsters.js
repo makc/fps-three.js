@@ -3,7 +3,7 @@ define(["ecs", "components"], function (ecs, components) {
 		ecs.for_each([components.Shot], function(shot) {
 			var ray = shot.get(components.Shot).ray;
 			var i = 0;
-			ecs.for_each([components.Monster, components.Motion, components.Body], function(monster) {
+			ecs.for_each([components.Monster, components.Motion, components.Body, components.AnimatedObject], function(monster) {
 				var monsterCenter = monster.get(components.Motion).position.clone();
 				monsterCenter.y += monster.get(components.Body).object.geometry.boundingSphere.radius;
 
@@ -19,8 +19,12 @@ define(["ecs", "components"], function (ecs, components) {
 				var monsterComponent = monster.get(components.Monster);
 				monsterComponent.health -= damage;
 				if(monsterComponent.health <= 0) {
-					// for now just remove it
-					monster.add(new components.PendingRemoval());
+					// for now just play monster death animation and remove it
+					monster.get(components.AnimatedObject).object.playOnce("die", 500, function(){
+						monster.add(new components.PendingRemoval());
+					});
+				} else if(damage > 0) {
+					monster.get(components.AnimatedObject).object.playOnce("pain", 300);
 				}
 			});
 			shot.remove();

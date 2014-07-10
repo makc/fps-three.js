@@ -57,6 +57,10 @@ define({
 
 	Monster : function Monster () {
 		this.health = 100;
+	},
+
+	AnimatedObject : function AnimatedObject (object) {
+		this.object = object;
 	}
 
 });

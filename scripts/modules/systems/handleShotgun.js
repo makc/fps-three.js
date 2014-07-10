@@ -1,17 +1,18 @@
 define(["ecs", "game", "components"], function (ecs, game, components) {
 	var swayFactor = 0;
 	return { update: function(dt) {
-		ecs.for_each([components.Hero, components.Motion, components.Shotgun], function(player) {
+		ecs.for_each([components.Hero, components.Motion, components.Shotgun, components.AnimatedObject], function(player) {
 			var hero = player.get(components.Hero);
 			var motion = player.get(components.Motion);
 			var shotgun = player.get(components.Shotgun);
+			var shotgunModel = player.get(components.AnimatedObject).object;
 
 			// sway the shotgun as you go
 			var t = 5e-3 * (Date.now() % 6283);
 			var a = motion.airborne ? 0 : motion.velocity.length(), b;
 			swayFactor *= 0.8; swayFactor += 0.2 * a; a = swayFactor; b = 0.5 * a;
-			game.assets.shotgunModel.position.x =  0.235 + a * Math.cos(t);
-			game.assets.shotgunModel.position.y = -0.2   + b * (Math.cos(t * 2) - 1);
+			shotgunModel.position.x =  0.235 + a * Math.cos(t);
+			shotgunModel.position.y = -0.2   + b * (Math.cos(t * 2) - 1);
 
 			// fire?
 			if(shotgun.pullingTrigger && !shotgun.loading && !shotgun.firing && (hero.shells > 1)) {
@@ -20,22 +21,10 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 
 				game.assets.shotgunFired.cloneNode().play();
 
-				// three.js can be nominated for the crappiest animation api ever
-				$({ t: 0 }).animate({ t: 1 }, { duration: 600, step: function(t) {
-					var model = game.assets.shotgunModel;
-					var length = model.geometry.morphTargets.length;
-					var position = length * t, frame = Math.floor(position), spill = position - frame;
-					var a = frame % length, b = (frame + 1) % length;
-					for (var i = 0; i < model.morphTargetInfluences.length; i++) {
-						switch (i) {
-							case a: model.morphTargetInfluences[i] = 1 - spill; break;
-							case b: model.morphTargetInfluences[i] = spill; break;
-							default: model.morphTargetInfluences[i] = 0; break;
-						}
-					}
-				}, complete: function() {
+				// play shotgun animation
+				shotgunModel.playOnce("pow", 600, function() {
 					shotgun.firing = false;
-				}});
+				});
 
 				hero.shells--;
 
@@ -49,20 +38,19 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 				));
 
 				new ecs.Entity().add(new components.Shot(new THREE.Ray(origin, direction)));
-
-				game.scene.add(new THREE.ArrowHelper (direction, origin, 3));
 			}
 
 			return true;
 		});
 	},
 	reload: function() {
-		ecs.for_each([components.Shotgun], function(player) {
+		ecs.for_each([components.Shotgun, components.AnimatedObject], function(player) {
 			var shotgun = player.get(components.Shotgun);
+			var shotgunModel = player.get(components.AnimatedObject).object;
 
 			if(!shotgun.loading) {
 				shotgun.loading = true;
-				$(game.assets.shotgunModel.rotation)
+				$(shotgunModel.rotation)
 					.animate({ x: -0.7 }, { duration: 400 })
 					.animate({ x:  0   }, { duration: 400, complete: function() {
 						shotgun.loading = false;
@@ -73,7 +61,14 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 		});
 	},
 	reset: function() {
-		var shotgunRotation = game.assets.shotgunModel.rotation;
-		$(shotgunRotation).stop(true); shotgunRotation.x = -0.7;
+		ecs.for_each([components.Hero, components.AnimatedObject], function(player) {
+			var shotgunModel = player.get(components.AnimatedObject).object;
+			shotgunModel.playOnce(null);
+
+			var shotgunRotation = shotgunModel.rotation;
+			$(shotgunRotation).stop(true); shotgunRotation.x = -0.7;
+
+			return true;
+		});
 	}};
 });
