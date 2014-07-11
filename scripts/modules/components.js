@@ -61,6 +61,10 @@ define({
 
 	AnimatedObject : function AnimatedObject (object) {
 		this.object = object;
+	},
+
+	Destination : function Destination (index) {
+		this.index = index;
 	}
 
 });
