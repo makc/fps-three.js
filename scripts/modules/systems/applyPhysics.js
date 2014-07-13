@@ -11,19 +11,28 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 	var angles = new THREE.Vector2();
 	var displacement = new THREE.Vector3();
 
+	var motions = [], i, n, collectMotions = function(entity) {
+		motions[i] = entity.get(components.Motion); i++;
+	};
+
 	return { update: function(dt) {
 		timeLeft += dt;
+
+		// collect motions once
+		i = 0;
+		ecs.for_each([components.Motion], collectMotions);
+		n = motions.length = i;
 
 		// run several fixed-step iterations to approximate varying-step
 
 		dt = 5;
 		while(timeLeft >= dt) {
 
-			ecs.for_each([components.Motion], function(entity) {
+			for(i = 0; i < n; i++) {
 				// implement very simple platformer physics
 				var time = 0.3;
 
-				var motion = entity.get(components.Motion);
+				var motion = motions[i];
 
 				raycaster.ray.origin.copy(motion.position);
 				raycaster.ray.origin.y += birdsEye;
@@ -61,7 +70,7 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 				motion.rotation.x = Math.max(-0.4, Math.min (0.4, motion.rotation.x));
 				// wrap horizontal rotation to 0...2π
 				motion.rotation.y += 2 * Math.PI; motion.rotation.y %= 2 * Math.PI;
-			});
+			}
 
 			timeLeft -= dt;
 		}
