@@ -21,8 +21,8 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 					.add(new components.Motion())
 					.add(new components.PendingAddition(
 						game.assets.monsterLight,
-						game.assets.monsterPlate.clone(),
-						game.assets.monsterAppeared.cloneNode()
+						game.assets.monsterPlate,
+						game.assets.monsterAppeared
 					));
 			}
 		}

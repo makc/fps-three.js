@@ -40,9 +40,20 @@ define({
 		this.givesShotgun = givesShotgun;
 	},
 
-	Plate : function Plate (light, plate) {
+	Plate : function Plate () {
+		this.opacityMultiplier = 0;
+	},
+
+	PlatePendingAddition : function PlatePendingAddition (light, plate) {
 		this.light = light;
 		this.plate = plate;
+	},
+
+	PlatePendingRemoval : function PlatePendingRemoval () {
+	},
+
+	PlateEntity : function PlateEntity (entity) {
+		this.entity = entity
 	},
 
 	Shot : function Shot (ray) {

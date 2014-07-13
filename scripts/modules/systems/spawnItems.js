@@ -24,8 +24,8 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 					.add(new components.Motion(0, 0, 0, 0, 0, 0, 0, Math.random() * 2 * Math.PI, 0, rotate, 1))
 					.add(new components.PendingAddition(
 						game.assets.itemLight,
-						game.assets.itemPlate.clone(),
-						game.assets.itemAppeared.cloneNode()
+						game.assets.itemPlate,
+						game.assets.itemAppeared
 					));
 			}
 		}

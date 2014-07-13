@@ -1,5 +1,4 @@
 define(["ecs", "components"], function (ecs, components) {
-	var euler = new THREE.Euler(-0.5 * Math.PI, 0, 0, 'YXZ');
 
 	// rules to animate light pillar by
 	var lightScale = function (y, r) {
@@ -10,57 +9,79 @@ define(["ecs", "components"], function (ecs, components) {
 	};
 
 	return { update: function(dt) {
-		ecs.for_each([components.Plate], function(entity) {
-			var plateComponent = entity.get(components.Plate);
-			var plate = plateComponent.plate;
+		ecs.for_each([components.Body, components.Plate, components.PlatePendingAddition], function(entity) {
+			var object = entity.get(components.Body).object;
+			var pillar = new THREE.Object3D(); object.add(pillar);
 
-			// adjust rotation
-			euler.setFromQuaternion(plate.parent.quaternion);
-			euler.x = -0.5 * Math.PI;
-			euler.y = -euler.y;
-			plate.quaternion.setFromEuler(euler);
+			var pa = entity.get(components.PlatePendingAddition);
+			var light = pa.light, plate = pa.plate;
+
+			var R = 0.3 * plate.geometry.boundingSphere.radius;
+
+			for (var i = 0, n = 5 + 10 * R * Math.random(); i < n; i++) {
+				var ray = light.clone();
+				ray.material = light.material.clone();
+
+				ray.position.y -= 2 * ray.geometry.boundingSphere.radius * Math.random();
+
+				var a = 2 * Math.PI * i / n, r = R * Math.random();
+				ray.position.x += r * Math.cos(a);
+				ray.position.z += r * Math.sin(a);
+
+				ray.rotation.y = Math.random() * 2 * Math.PI;
+
+				pillar.add(ray);
+			}
+
+			object.add(plate = plate.clone());
+			plate.rotation.x = -0.5 * Math.PI; plate.material = plate.material.clone();
+
+			$(entity.get(components.Plate)).animate({ opacityMultiplier: 1 }, { duration: 1000 });
+
+			entity.remove(components.PlatePendingAddition);
+		});
+
+		ecs.for_each([components.Body, components.Plate], function(entity) {
+			var object = entity.get(components.Body).object;
+			var pillar = object.children[0];
+			var plate = object.children[1];
 
 			// glow
-			plate.material.opacity =
-				0.9 * plate.material.opacity +
-				0.1 * (0.7 + 0.5 * Math.sin((Date.now() % 6283) * 5e-3));
+			var opacityMultiplier = entity.get(components.Plate).opacityMultiplier;
+			plate.material.opacity = opacityMultiplier * (0.7 + 0.5 * Math.sin((Date.now() % 6283) * 5e-3));
 
-			var i, n, ray;
-			if (plateComponent.pillar) {
-				// animate light pillar
-				for (i = 0, n = plateComponent.pillar.length; i < n; i++) {
-					ray = plateComponent.pillar[i];
+			// animate light pillar
+			for (var i = 0, n = pillar.children.length; i < n; i++) {
+				var ray = pillar.children[i];
 
-					ray.position.y += 5e-3 * dt;
-					ray.scale.y = lightScale(ray.position.y, ray.geometry.boundingSphere.radius);
-					ray.material.opacity = lightOpacity(ray.position.y, ray.geometry.boundingSphere.radius);
-					if (ray.material.opacity < 1e-3) {
-						ray.position.y = plate.position.y;
-					}
+				ray.position.y += 5e-3 * dt;
+				ray.scale.y = lightScale(ray.position.y, ray.geometry.boundingSphere.radius);
+				ray.material.opacity = lightOpacity(ray.position.y, ray.geometry.boundingSphere.radius);
+				if (ray.material.opacity < 1e-3) {
+					ray.position.y = plate.position.y;
 				}
-			} else if (plateComponent.light) {
-				// create light pillar
-				plateComponent.pillar = [];
-
-				var R = 0.3 * plateComponent.plate.geometry.boundingSphere.radius;
-
-				for (i = 0, n = 5 + 10 * R * Math.random(); i < n; i++) {
-					ray = plateComponent.light.clone();
-					ray.material = plateComponent.light.material.clone();
-
-					ray.position.y -= 2 * ray.geometry.boundingSphere.radius * Math.random();
-
-					var a = 2 * Math.PI * i / n, r = R * Math.random();
-					ray.position.x += r * Math.cos(a);
-					ray.position.z += r * Math.sin(a);
-
-					ray.rotation.y = Math.random() * 2 * Math.PI;
-
-					plate.parent.add(ray);
-
-					plateComponent.pillar[i] = ray;
-				}
+				ray.material.opacity *= opacityMultiplier;
 			}
+		});
+
+		ecs.for_each([components.Body, components.Plate, components.PlatePendingRemoval], function(entity) {
+			var plateComponent = entity.get(components.Plate);
+			$(plateComponent).stop(true);
+			$(plateComponent).animate({ opacityMultiplier: 0 }, { duration: 2000,
+				complete: function() {
+					var object = entity.get(components.Body).object;
+
+					// materials were cloned, so they need to be disposed
+					object.traverse(function(child) {
+						if(child.material) child.material.dispose();
+					});
+
+					object.parent.remove(object);
+					entity.remove();
+				}
+			});
+
+			entity.remove(components.PlatePendingRemoval);
 		});
 	}};
 });
