@@ -12,6 +12,7 @@ require([
 	,"systems/addObjects"
 	,"systems/jumpPads"
 	,"systems/keyboardControls"
+	,"systems/moveMonsters"
 	,"systems/applyPhysics"
 	,"systems/renderBodies"
 	,"systems/footSteps"
@@ -31,6 +32,7 @@ require([
 	,addObjects
 	,jumpPads
 	,keyboardControls
+	,moveMonsters
 	,applyPhysics
 	,renderBodies
 	,footSteps
@@ -165,6 +167,7 @@ require([
 			addObjects.update(dt);
 			jumpPads.update(dt);
 			keyboardControls.update(dt);
+			moveMonsters.update(dt);
 			applyPhysics.update(dt);
 			renderBodies.update(dt);
 			footSteps.update(dt);

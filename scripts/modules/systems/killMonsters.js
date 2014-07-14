@@ -27,8 +27,10 @@ define(["ecs", "components"], function (ecs, components) {
 
 						// if it still has its plate attached, remove it
 						var plateComponent = monster.get(components.PlateEntity);
-						if(plateComponent) plateComponent.entity.add(new components.PlatePendingRemoval);
-
+						if(plateComponent) {
+							plateComponent.entity.add(new components.PlatePendingRemoval);
+							monster.remove(components.PlateEntity);
+						}
 					});
 				} else if(damage > 0) {
 					monster.get(components.AnimatedObject).object.playOnce("pain", 300);

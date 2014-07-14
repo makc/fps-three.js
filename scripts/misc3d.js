@@ -67,6 +67,19 @@ AnimatedMD2Model.prototype.interpolateTargets = function(a, b, t) {
 	if(b > -1) this.morphTargetInfluences[b] = t;
 };
 
+AnimatedMD2Model.prototype.setDefaultAnimation = function(animation, time) {
+	if (this.defaultAnimation && (this.defaultAnimation.animation != animation)) {
+		var playingDefaultAnimation = this.playingAnimation && (
+			this.playingAnimation.animation == this.defaultAnimation.animation
+		);
+		this.defaultAnimation.animation = animation;
+		this.defaultAnimation.time = time;
+		if (playingDefaultAnimation) {
+			this.playOnce(this.defaultAnimation);
+		}
+	}
+};
+
 AnimatedMD2Model.prototype.playOnce = function(animation, time, callback) {
 	var animationObject = (arguments.length > 1) ? { animation: animation, time: time, callback: callback } : animation;
 
