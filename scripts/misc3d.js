@@ -29,24 +29,27 @@ SkyBox.prototype = Object.create(THREE.Mesh.prototype);
  * http://oos.moxiecode.com/js_webgl/md2_converter/
  */
 AnimatedMD2Model = function(json, image, defaultAnimation, defaultAnimationTime) {
-	this.json = json;
-	this.image = image;
+	if (json.constructor == THREE.Geometry) {
+		// avoid needless re-init in clone() call
+		THREE.MorphAnimMesh.call(this, json, image);
 
-	var texture = new THREE.Texture(image);
-	texture.needsUpdate = true;
+	} else {
+		var texture = new THREE.Texture(image);
+		texture.needsUpdate = true;
 
-	var material = new THREE.MeshBasicMaterial({ map: texture, morphTargets: true });
+		var material = new THREE.MeshBasicMaterial({ map: texture, morphTargets: true });
 
-	var loader = new THREE.JSONLoader();
-	var model = loader.parse(json);
-	var geometry = model.geometry;
-	geometry.computeFaceNormals();
-	geometry.computeVertexNormals();
+		var loader = new THREE.JSONLoader();
+		var model = loader.parse(json);
+		var geometry = model.geometry;
+		geometry.computeFaceNormals();
+		geometry.computeVertexNormals();
 
-	geometry.computeMorphNormals();
-	THREE.MorphAnimMesh.call(this, geometry, material);
+		geometry.computeMorphNormals();
+		THREE.MorphAnimMesh.call(this, geometry, material);
 
-	this.parseAnimations();
+		this.parseAnimations();
+	}
 
 	this.playingAnimation = null;
 	this.defaultAnimation = defaultAnimation ? { animation: defaultAnimation, time: defaultAnimationTime, callback: null } : null;
@@ -106,7 +109,7 @@ AnimatedMD2Model.prototype.clone = function() {
 
 	var a = this.defaultAnimation ? this.defaultAnimation.animation : undefined;
 	var t = this.defaultAnimation ? this.defaultAnimation.time : undefined;
-	var o = new AnimatedMD2Model(this.json, this.image, a, t);
+	var o = new AnimatedMD2Model(this.geometry, this.material, a, t);
 
 	THREE.MorphAnimMesh.prototype.clone.call(this, o);
 
