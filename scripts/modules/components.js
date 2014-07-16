@@ -76,6 +76,9 @@ define({
 
 	Destination : function Destination (index) {
 		this.index = index;
+	},
+
+	UnderFire : function UnderFire () {
 	}
 
 });

@@ -14,6 +14,7 @@ define(["ecs", "game", "map", "components"], function (ecs, game, map, component
 
 			var body = monster.get(components.Body);
 			var motion = monster.get(components.Motion);
+			var underFire = monster.get(components.UnderFire);
 
 			var destination = monster.get(components.Destination);
 
@@ -21,15 +22,14 @@ define(["ecs", "game", "map", "components"], function (ecs, game, map, component
 
 			// are we there yet?
 			distance.subVectors(target, motion.position);
-			if(distance.lengthSq() < 0.5) {
+			if((distance.lengthSq() < 0.5) || underFire) {
 				// yes
 				body.object.setDefaultAnimation("stand", 2600);
 
 				target.copy(playerPosition);
 
-				// move once every 4 seconds, or N = 4000/dt calls
-				// with probability P per call, P * N ~ 1, or P ~ 1 / N
-				if(Math.random() < dt / 4000) {
+				// move once every 4 seconds when not under fire
+				if(!underFire && (Math.random() < dt / 4000)) {
 					destination.index = map.requestRandomDestinationIndex(destination.index);
 
 					// if it still has its plate attached, remove it
@@ -43,7 +43,7 @@ define(["ecs", "game", "map", "components"], function (ecs, game, map, component
 				// move to it
 				body.object.setDefaultAnimation("walk", 666);
 
-				distance.normalize().multiplyScalar(0.09);
+				distance.normalize().multiplyScalar(0.05);
 				motion.position.add(distance);
 			}
 
