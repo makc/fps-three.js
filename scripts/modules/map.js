@@ -36,7 +36,8 @@ define(function () {
 				used[j] = true; delete used[currentIndex];
 				return j;
 			}
-			return -1;
+			// all neighbour destinations are taken - nowhere to go
+			return currentIndex;
 		},
 		releaseDestinationIndex : function(index) {
 			delete used[index];

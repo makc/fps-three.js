@@ -12,16 +12,18 @@ require([
 	,"systems/addObjects"
 	,"systems/jumpPads"
 	,"systems/keyboardControls"
-	,"systems/moveMonsters"
+	,"systems/controlMonsters"
 	,"systems/applyPhysics"
 	,"systems/renderBodies"
 	,"systems/footSteps"
 	,"systems/glowingPlates"
 	,"systems/animateObjects"
 	,"systems/pickItems"
+	,"systems/killHero"
 	,"systems/killMonsters"
 	,"systems/removeObjects"
 	,"systems/handleShotgun"
+	,"systems/plasmaBalls"
 ], function(
 	 ecs
 	,game
@@ -32,16 +34,18 @@ require([
 	,addObjects
 	,jumpPads
 	,keyboardControls
-	,moveMonsters
+	,controlMonsters
 	,applyPhysics
 	,renderBodies
 	,footSteps
 	,glowingPlates
 	,animateObjects
 	,pickItems
+	,killHero
 	,killMonsters
 	,removeObjects
 	,handleShotgun
+	,plasmaBalls
 ) {
 
 	// load game assets
@@ -74,6 +78,11 @@ require([
 		,$.loadAudio("assets/sounds/monsterAppeared.mp3")
 		,$.getJSON("assets/imp/imp.json")
 		,$.loadImage("assets/imp/skin.jpg")
+		,$.loadImage("assets/misc/plasma.jpg")
+		,$.loadAudio("assets/sounds/pain1.mp3")
+		,$.loadAudio("assets/sounds/pain2.mp3")
+		,$.loadAudio("assets/sounds/death1.mp3")
+		,$.loadAudio("assets/sounds/death2.mp3")
 	).then(function(
 		 skyboxSide1
 		,skyboxSide2
@@ -101,7 +110,12 @@ require([
 		,monsterPlateTexture
 		,monsterAppeared
 		,monsterModel
-		,monsterTextue
+		,monsterTexture
+		,plasmaTexture
+		,pain1
+		,pain2
+		,death1
+		,death2
 	){
 		// create and store various stuff on game.assets
 
@@ -138,7 +152,12 @@ require([
 
 		game.assets.shotgunFired = shotgunFired;
 
-		game.assets.monsterModel = new AnimatedMD2Model(monsterModel[0], monsterTextue, "stand", 2600);
+		game.assets.monsterModel = new AnimatedMD2Model(monsterModel[0], monsterTexture, "stand", 2600);
+
+		game.assets.plasmaBall = createPlasmaBall(plasmaTexture);
+
+		game.assets.pain = [pain1, pain2];
+		game.assets.death = [death1, death2];
 
 		// add 3D scene to the webpage
 
@@ -167,16 +186,18 @@ require([
 			addObjects.update(dt);
 			jumpPads.update(dt);
 			keyboardControls.update(dt);
-			moveMonsters.update(dt);
+			controlMonsters.update(dt);
 			applyPhysics.update(dt);
 			renderBodies.update(dt);
 			footSteps.update(dt);
 			glowingPlates.update(dt);
 			animateObjects.update(dt);
 			pickItems.update(dt);
+			killHero.update(dt);
 			killMonsters.update(dt);
 			removeObjects.update(dt);
 			handleShotgun.update(dt);
+			plasmaBalls.update(dt);
 
 		};
 

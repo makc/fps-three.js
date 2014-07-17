@@ -79,6 +79,11 @@ define({
 	},
 
 	UnderFire : function UnderFire () {
+	},
+
+	Plasma : function Plasma (object) {
+		this.velocity = new THREE.Vector3();
+		this.object = object;
 	}
 
 });

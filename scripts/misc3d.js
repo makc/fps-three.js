@@ -67,6 +67,19 @@ AnimatedMD2Model.prototype.interpolateTargets = function(a, b, t) {
 	if(b > -1) this.morphTargetInfluences[b] = t;
 };
 
+AnimatedMD2Model.prototype.getVertexCoordinates = (function(){
+	var temp = new THREE.Vector3();
+	return function(index, vector3) {
+		vector3 = vector3 || new THREE.Vector3();
+		vector3.set(0, 0, 0);
+		var targets = this.geometry.morphTargets;
+		for (var i = 0, n = targets.length; i < n; i++) {
+			vector3.add(temp.copy(targets[i].vertices[index]).multiplyScalar(this.morphTargetInfluences[i]));
+		}
+		return vector3;
+	};
+}) ();
+
 AnimatedMD2Model.prototype.setDefaultAnimation = function(animation, time) {
 	if (this.defaultAnimation && (this.defaultAnimation.animation != animation)) {
 		var playingDefaultAnimation = this.playingAnimation && (
@@ -82,6 +95,11 @@ AnimatedMD2Model.prototype.setDefaultAnimation = function(animation, time) {
 
 AnimatedMD2Model.prototype.playOnce = function(animation, time, callback) {
 	var animationObject = (arguments.length > 1) ? { animation: animation, time: time, callback: callback } : animation;
+
+	// finish current animation
+	if(this.playingAnimation) {
+		this.interpolateTargets(this.endKeyframe, -1, 0);
+	}
 
 	// set (or clear) playingAnimation
 	this.playingAnimation = animationObject;
@@ -170,4 +188,27 @@ function createMeshForPlate(image, materialParams) {
 	plate.geometry.computeBoundingSphere();
 
 	return plate;
+};
+
+/**
+ * Plasma "ball".
+ */
+function createPlasmaBall(image) {
+	var texture = new THREE.Texture(image);
+	texture.needsUpdate = true;
+
+	var width = 0.015 * image.width;
+	var plane = new THREE.Mesh(new THREE.PlaneGeometry(width, width), new THREE.MeshBasicMaterial({
+		map: texture, transparent: true, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false
+	}));
+
+	var object = new THREE.Object3D();
+	for (var i = 0; i < 5; i++) {
+		var p = plane.clone();
+		p.rotation.z = 2 * Math.PI * Math.random();
+		if (i % 2) p.rotation.x = Math.PI;
+		object.add(p);
+	}
+
+	return object;
 };
