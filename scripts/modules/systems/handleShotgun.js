@@ -15,7 +15,7 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 			shotgunModel.position.y = -0.2   + b * (Math.cos(t * 2) - 1);
 
 			// fire?
-			if(shotgun.pullingTrigger && !shotgun.loading && !shotgun.firing && (hero.shells > 1)) {
+			if(shotgun.pullingTrigger && !shotgun.loading && !shotgun.firing && (hero.shells > 0)) {
 				// fire!
 				shotgun.firing = true;
 

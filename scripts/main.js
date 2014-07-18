@@ -24,6 +24,7 @@ require([
 	,"systems/removeObjects"
 	,"systems/handleShotgun"
 	,"systems/plasmaBalls"
+	,"systems/hud"
 ], function(
 	 ecs
 	,game
@@ -46,6 +47,7 @@ require([
 	,removeObjects
 	,handleShotgun
 	,plasmaBalls
+	,hud
 ) {
 
 	// load game assets
@@ -159,12 +161,19 @@ require([
 		game.assets.pain = [pain1, pain2];
 		game.assets.death = [death1, death2];
 
+
 		// add 3D scene to the webpage
 
-		$("body").empty().append(game.domElement);
+		$("#a").replaceWith(game.domElement);
 		var gameViewportSize = function() { return {
 			width: window.innerWidth, height: window.innerHeight
 		}};
+
+
+		// show hud and fade welcome message out
+
+		$("#c").show();
+		$("#f").delay(6000).fadeOut();
 
 
 		// create entities
@@ -198,6 +207,7 @@ require([
 			removeObjects.update(dt);
 			handleShotgun.update(dt);
 			plasmaBalls.update(dt);
+			hud.update(dt);
 
 		};
 

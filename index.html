@@ -11,6 +11,17 @@
 		<title>Game</title>
 
 		<style type="text/css" media="screen">
+		@font-face {
+			font-family: 'doomregular';
+			src: url('assets/fonts/doom-webfont.eot');
+			src: url('assets/fonts/doom-webfont.eot?#iefix') format('embedded-opentype'),
+			     url('assets/fonts/doom-webfont.woff') format('woff'),
+			     url('assets/fonts/doom-webfont.ttf') format('truetype'),
+			     url('assets/fonts/doom-webfont.svg#doomregular') format('svg');
+			font-weight: normal;
+			font-style: normal;
+		}
+
 		body{
 			margin: 0px;
 			overflow: hidden;
@@ -38,11 +49,48 @@
 			height: 60px;
 			visibility: visible
 		}
+
+		#c{
+			color: orange;
+			display: none;
+			font-family: 'doomregular';
+			font-size: 24px;
+			pointer-events: none; user-select: none;
+			position: absolute; top: 0px;
+			width: 100%;
+			z-index: 666;
+		}
+
+		#d{
+			float: left; text-align: left; margin-left: 20px;
+		}
+
+		#e{
+			float: right; text-align: right; margin-right: 20px;
+		}
+
+		#f{
+			margin: 20%;
+		}
+
+		#health, #shells{
+			font-size: 48px;
+		}
 		</style>
 	</head>
 	<body>
 		<!-- preloader -->
 		<div id="a"><img id="b" height="60" width="60" alt="Loading..." src="assets/misc/loading.gif"></div>
+		<div id="c">
+			<div id="d">shells<div id="shells">O</div></div>
+			<div id="e">health<div id="health">IOO</div></div>
+			<div id="f">
+				Welcome to the game!
+				Use arrow keys to look around, WASD to move and SPACE to shoot.
+				<br /><br />
+				Tip: always keep one spare shotgun to pick up ).
+			</div>
+		</div>
 
 		<!-- 1.10.2 because https://twitter.com/makc3d/status/475039125914271744 -->
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
