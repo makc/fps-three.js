@@ -212,3 +212,20 @@ function createPlasmaBall(image) {
 
 	return object;
 };
+
+/**
+ * Creates semi-valid geometry version with top side faces only.
+ */
+function topSide(geometry) {
+	var result = new THREE.Geometry();
+	result.vertices = geometry.vertices;
+	var up = new THREE.Vector3(0, 1, 0);
+	for (var i = 0, n = geometry.faces.length; i < n; i++) {
+		var face = geometry.faces[i];
+		if (face.normal.dot(up) > 0.1 /* ~6° */) {
+			result.faces.push(face);
+			result.faceVertexUvs[0].push(geometry.faceVertexUvs[0][i])
+		}
+	}
+	return result;
+};

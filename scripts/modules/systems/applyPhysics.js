@@ -15,8 +15,14 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 		motions[i] = entity.get(components.Motion); i++;
 	};
 
+	var platform = null;
+
 	return { update: function(dt) {
 		timeLeft += dt;
+
+		if (platform == null) {
+			platform = new THREE.Mesh(topSide(game.assets.arenaModel.geometry));
+		}
 
 		// collect motions once
 		i = 0;
@@ -36,12 +42,12 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 
 				raycaster.ray.origin.copy(motion.position);
 				raycaster.ray.origin.y += birdsEye;
-				var hits = raycaster.intersectObject(game.assets.arenaModel);
+				var hits = raycaster.intersectObject(platform);
 
 
 				motion.airborne = true;
 				// are we above, or at most knee deep in, the platform?
-				if((hits.length > 0) && (hits[0].face.normal.y > 0)) {
+				if(hits.length > 0) {
 					var actualHeight = hits[0].distance - birdsEye;
 					// collision: stick to the surface if landing on it
 					if((motion.velocity.y <= 0) && (Math.abs(actualHeight) < kneeDeep)) {
