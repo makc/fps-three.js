@@ -51,8 +51,8 @@ $.loadAudio = function(url) {
     var audio = new Audio(url);
     audio.preload = "auto";
 
-    audio.oncanplay = loaded;
-    audio.onerror = errored;
+    audio.addEventListener("canplay", loaded, false);
+    audio.addEventListener("error", errored, false);
 
     audio.load();
 
@@ -65,8 +65,8 @@ $.loadAudio = function(url) {
       deferred.reject(audio);
     }
     function unbindEvents() {
-      audio.oncanplay = null;
-      audio.onerror = null;
+      audio.removeEventListener("canplay", loaded);
+      audio.removeEventListener("error", errored);
     }
   };
 
