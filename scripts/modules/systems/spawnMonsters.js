@@ -20,6 +20,7 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 					.add(new components.AnimatedObject(object))
 					.add(new components.Motion())
 					.add(new components.PendingAddition(
+						0xff7700,
 						game.assets.monsterLight,
 						game.assets.monsterPlate,
 						game.assets.monsterAppeared

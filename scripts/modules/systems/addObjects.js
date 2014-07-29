@@ -12,6 +12,8 @@ define(["ecs", "game", "map", "components"], function (ecs, game, map, component
 			var object = entity.get(components.Body).object; game.scene.add(object);
 			// play sound to notify the player we have spawned something
 			var pa = entity.get(components.PendingAddition); if (pa.sound) { pa.sound.cloneNode().play(); }
+			// fade the object in
+			if(object.material) { entity.add(new components.Dissolving(new DissolvingEffect(object, pa.color, 2000, false))); }
 			// create new entity with Plate component for glowingPlates system to handle
 			if(pa.plate) {
 				object = new THREE.Object3D(); game.scene.add(object);

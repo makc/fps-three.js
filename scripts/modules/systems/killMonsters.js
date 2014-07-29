@@ -23,10 +23,18 @@ define(["ecs", "components"], function (ecs, components) {
 
 					var monsterComponent = monster.get(components.Monster);
 					monsterComponent.health -= damage;
+
+					var object = monster.get(components.AnimatedObject).object;
+
 					if(monsterComponent.health <= 0) {
-						// for now just play monster death animation and remove it
-						monster.get(components.AnimatedObject).object.playOnce("die", 500, function() {
-							monster.add(new components.PendingRemoval());
+						monster.add(new components.Dissolving(new DissolvingEffect(object, 0xff7700, 2000, true)));
+
+						object.defaultAnimation = null;
+						object.playOnce("die", 500, function() {
+							// wait for dissolving effect to end
+							setTimeout(function(){
+								monster.add(new components.PendingRemoval());
+							}, 2000 - 500);
 
 							// if it still has its plate attached, remove it
 							var plateComponent = monster.get(components.PlateEntity);
@@ -36,7 +44,7 @@ define(["ecs", "components"], function (ecs, components) {
 							}
 						});
 					} else {
-						monster.get(components.AnimatedObject).object.playOnce("pain", 300, function() {
+						object.playOnce("pain", 300, function() {
 							monster.remove(components.UnderFire);
 						});
 					}

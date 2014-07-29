@@ -25,7 +25,8 @@ define({
 		this.damping = d || 0.93;
 	},
 
-	PendingAddition : function PendingAddition (light, plate, sound) {
+	PendingAddition : function PendingAddition (color, light, plate, sound) {
+		this.color = color;
 		this.light = light;
 		this.plate = plate;
 		this.sound = sound;
@@ -84,6 +85,10 @@ define({
 	Plasma : function Plasma (object) {
 		this.velocity = new THREE.Vector3();
 		this.object = object;
+	},
+
+	Dissolving : function Dissolving (effect) {
+		this.effect = effect;
 	}
 
 });

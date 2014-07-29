@@ -18,6 +18,7 @@ require([
 	,"systems/footSteps"
 	,"systems/glowingPlates"
 	,"systems/animateObjects"
+	,"systems/dissolvingEffect"
 	,"systems/pickItems"
 	,"systems/killHero"
 	,"systems/killMonsters"
@@ -41,6 +42,7 @@ require([
 	,footSteps
 	,glowingPlates
 	,animateObjects
+	,dissolvingEffect
 	,pickItems
 	,killHero
 	,killMonsters
@@ -80,6 +82,7 @@ require([
 		,$.loadAudio("assets/sounds/monsterAppeared.mp3")
 		,$.getJSON("assets/imp/imp.json")
 		,$.loadImage("assets/imp/skin.jpg")
+		,$.loadImage("assets/misc/noise.jpg")
 		,$.loadImage("assets/misc/plasma.jpg")
 		,$.loadAudio("assets/sounds/pain1.mp3")
 		,$.loadAudio("assets/sounds/pain2.mp3")
@@ -113,6 +116,7 @@ require([
 		,monsterAppeared
 		,monsterModel
 		,monsterTexture
+		,noiseTexture
 		,plasmaTexture
 		,pain1
 		,pain2
@@ -155,6 +159,9 @@ require([
 		game.assets.shotgunFired = shotgunFired;
 
 		game.assets.monsterModel = new AnimatedMD2Model(monsterModel[0], monsterTexture, "stand", 2600);
+
+		DissolvingEffect.prototype.noiseTexture = new THREE.Texture(noiseTexture);
+		DissolvingEffect.prototype.noiseTexture.needsUpdate = true;
 
 		game.assets.plasmaBall = createPlasmaBall(plasmaTexture);
 
@@ -201,6 +208,7 @@ require([
 			footSteps.update(dt);
 			glowingPlates.update(dt);
 			animateObjects.update(dt);
+			dissolvingEffect.update(dt);
 			pickItems.update(dt);
 			killHero.update(dt);
 			killMonsters.update(dt);

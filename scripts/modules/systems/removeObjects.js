@@ -5,6 +5,8 @@ define(["ecs", "map", "components"], function (ecs, map, components) {
 
 			var pr = entity.get(components.PendingRemoval); if (pr.sound) { pr.sound.play(); }
 
+			var dc = entity.get(components.Dissolving); if (dc) { dc.effect.dispose(); }
+
 			var object = entity.get(components.Body).object; object.parent.remove(object);
 			entity.remove();
 		});
