@@ -27,6 +27,9 @@ define(["ecs", "components"], function (ecs, components) {
 					var object = monster.get(components.AnimatedObject).object;
 
 					if(monsterComponent.health <= 0) {
+						// make sure previous effect is disposed
+						var dc = monster.get(components.Dissolving); if (dc) { dc.effect.dispose(); }
+
 						monster.add(new components.Dissolving(new DissolvingEffect(object, 0xff7700, 2000, true)));
 
 						object.defaultAnimation = null;
