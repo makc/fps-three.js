@@ -315,10 +315,9 @@ DissolvingEffect.prototype = {
 		uniform float dissolve;\
 		void main() {\
 			vec4 c4 = texture2D( texture, vUv );\
-			float n = texture2D( noise, vUv ).x;\
-			n = ( n - dissolve ) * 20.0;\
+			float n = texture2D( noise, vUv ).x - dissolve;\
 			if (n < 0.0) { discard; }\
-			if (n < 1.0) { c4.rgb = color; }\
+			if (n < 0.05) { c4.rgb = color; }\
 			gl_FragColor = c4;\
 		}'
 };
