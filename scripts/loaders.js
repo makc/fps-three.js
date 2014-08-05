@@ -25,7 +25,7 @@ $.loadImage = function(url) {
     function errored() {
       unbindEvents();
       // Calling reject means we failed to load the image (e.g. 404, server offline, etc).
-      deferred.reject(image);
+      deferred.reject(url);
     }
     function unbindEvents() {
       // Ensures the event callbacks only get called once.
@@ -49,6 +49,22 @@ $.loadImage = function(url) {
 $.loadAudio = function(url) {
   var loadAudio = function(deferred) {
     var audio = new Audio(url);
+
+    // http://diveintohtml5.info/everything.html#audio-mp3
+    if(!!!(audio.canPlayType && audio.canPlayType("audio/mpeg;").replace(/no/, ""))) {
+      var dummy = {
+        cloneNode: function() {
+          return dummy;
+        },
+        play: function() {
+          // move along
+        }
+      };
+
+      deferred.resolve(dummy);
+      return;
+    }
+
     audio.preload = "auto";
 
     audio.addEventListener("canplay", loaded, false);
@@ -62,7 +78,7 @@ $.loadAudio = function(url) {
     }
     function errored() {
       unbindEvents();
-      deferred.reject(audio);
+      deferred.reject(url);
     }
     function unbindEvents() {
       audio.removeEventListener("canplay", loaded);

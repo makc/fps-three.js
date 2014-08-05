@@ -223,5 +223,7 @@ require([
 
 	}).fail(function(err, msg) {
 		console.log(err, msg);
+
+		alert("Failure: " + (err.statusText || msg || err));
 	});
 });
