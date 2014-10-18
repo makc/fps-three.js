@@ -11,7 +11,7 @@ require([
 	,"systems/spawnMonsters"
 	,"systems/addObjects"
 	,"systems/jumpPads"
-	,"systems/keyboardControls"
+	,"systems/playerControls"
 	,"systems/controlMonsters"
 	,"systems/applyPhysics"
 	,"systems/renderBodies"
@@ -35,7 +35,7 @@ require([
 	,spawnMonsters
 	,addObjects
 	,jumpPads
-	,keyboardControls
+	,playerControls
 	,controlMonsters
 	,applyPhysics
 	,renderBodies
@@ -201,7 +201,7 @@ require([
 			spawnMonsters.update(dt);
 			addObjects.update(dt);
 			jumpPads.update(dt);
-			keyboardControls.update(dt);
+			playerControls.update(dt);
 			controlMonsters.update(dt);
 			applyPhysics.update(dt);
 			renderBodies.update(dt);
