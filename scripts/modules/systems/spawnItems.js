@@ -10,7 +10,7 @@ define(["ecs", "game", "components"], function (ecs, game, components) {
 			// ...spawn one every 4 seconds, or N = 4000/dt calls
 			// with probability P per call, P * N ~ 1, or P ~ 1 / N
 
-			var spawnShotgun = (Math.random () < 0.2);
+			var spawnShotgun = (itemCount < 1) || (Math.random () < 0.2);
 
 			if(Math.random() < dt / 4000) {
 
